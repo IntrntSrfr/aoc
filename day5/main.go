@@ -1,37 +1,135 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
+)
 
 func main() {
+	inp := getList()
 
-	for n := 0; n < 100; n++ {
-		for v := 0; v < 100; v++ {
+	pos := 0
+	for pos < len(inp) {
+		s := "00000"
+		s = s[len(inp[pos]):] + inp[pos]
+		s = s[:5]
 
-			inp := []int{1, 0, 0, 3, 1, 1, 2, 3, 1, 3, 4, 3, 1, 5, 0, 3, 2, 1, 9, 19, 1, 5, 19, 23, 1, 6, 23, 27, 1, 27, 10, 31, 1, 31, 5, 35, 2, 10, 35, 39, 1, 9, 39, 43, 1, 43, 5, 47, 1, 47, 6, 51, 2, 51, 6, 55, 1, 13, 55, 59, 2, 6, 59, 63, 1, 63, 5, 67, 2, 10, 67, 71, 1, 9, 71, 75, 1, 75, 13, 79, 1, 10, 79, 83, 2, 83, 13, 87, 1, 87, 6, 91, 1, 5, 91, 95, 2, 95, 9, 99, 1, 5, 99, 103, 1, 103, 6, 107, 2, 107, 13, 111, 1, 111, 10, 115, 2, 10, 115, 119, 1, 9, 119, 123, 1, 123, 9, 127, 1, 13, 127, 131, 2, 10, 131, 135, 1, 135, 5, 139, 1, 2, 139, 143, 1, 143, 5, 0, 99, 2, 0, 14, 0}
-			inp[1], inp[2] = n, v
-
-			pos := 0
-			for inp[pos] != 99 {
-				x, y, cur := inp[pos+1], inp[pos+2], inp[pos+3]
-				if inp[pos] == 1 {
-					inp[cur] = inp[x] + inp[y]
-				} else if inp[pos] == 2 {
-					inp[cur] = inp[x] * inp[y]
-				} else if inp[pos] == 3 {
-
-					pos += 2
-				} else if inp[pos] == 4 {
-
-					pos += 2
-				}
-				pos += 4
-			}
-
-			if n == 12 && v == 2 {
-				fmt.Println("part 1:", inp[0])
-			} else if inp[0] == 19690720 {
-				fmt.Println("part 2:", n, v)
-			}
+		if s[3:] == "99" {
+			break
 		}
+
+		pm1 := s[2]
+		pm2 := s[1]
+
+		switch s[3:] {
+		case "01", "02", "07", "08":
+			// 3 parameters
+
+			p1, _ := strconv.Atoi(inp[pos+1])
+			p2, _ := strconv.Atoi(inp[pos+2])
+			p3, _ := strconv.Atoi(inp[pos+3])
+
+			pos1, pos2 := 0, 0
+
+			if pm1 == '1' {
+				pos1 = p1
+			} else {
+				pos1, _ = strconv.Atoi(inp[p1])
+			}
+			if pm2 == '1' {
+				pos2 = p2
+			} else {
+				pos2, _ = strconv.Atoi(inp[p2])
+			}
+
+			if s[3:] == "01" {
+				inp[p3] = strconv.Itoa(pos1 + pos2)
+			} else if s[3:] == "02" {
+				inp[p3] = strconv.Itoa(pos1 * pos2)
+			} else if s[3:] == "07" {
+				if pos1 < pos2 {
+					inp[p3] = "1"
+				} else {
+					inp[p3] = "0"
+				}
+			} else if s[3:] == "08" {
+				if pos1 == pos2 {
+					inp[p3] = "1"
+				} else {
+					inp[p3] = "0"
+				}
+			}
+		case "05", "06":
+			// 2 parameters
+
+			p1, _ := strconv.Atoi(inp[pos+1])
+			p2, _ := strconv.Atoi(inp[pos+2])
+
+			pos1 := 0
+			pos2 := 0
+
+			if pm1 == '1' {
+				pos1 = p1
+			} else {
+				pos1, _ = strconv.Atoi(inp[p1])
+			}
+			if pm2 == '1' {
+				pos2 = p2
+			} else {
+				pos2, _ = strconv.Atoi(inp[p2])
+			}
+
+			if s[3:] == "05" {
+				if pos1 != 0 {
+					pos = pos2
+					continue
+				}
+			} else if s[3:] == "06" {
+				if pos1 == 0 {
+					pos = pos2
+					continue
+				}
+			}
+			pos += 3
+			continue
+		case "03", "04":
+			// 1 parameter
+
+			p1, _ := strconv.Atoi(inp[pos+1])
+			pos1 := 0
+			if pm1 == '1' {
+				pos1 = p1
+			} else {
+				pos1, _ = strconv.Atoi(inp[p1])
+			}
+
+			if s[3:] == "03" {
+
+				input := ""
+				fmt.Scan(&input)
+				inp[p1] = input
+			} else if s[3:] == "04" {
+				fmt.Println(pos1)
+			}
+			pos += 2
+			continue
+		default:
+			break
+		}
+		pos += 4
 	}
+}
+
+func getList() []string {
+
+	f, _ := os.Open("./input.txt")
+	defer f.Close()
+
+	b, _ := ioutil.ReadAll(f)
+	v := strings.Split(string(b), ",")
+
+	return v
 }
