@@ -98,8 +98,8 @@ func validHGT(inp string) bool {
 	}
 }
 func validHCL(inp string) bool {
-	re := regexp.MustCompile("^#[0-9a-f]{6}$")
-	return re.MatchString(inp)
+	hclReg := regexp.MustCompile("^#[0-9a-f]{6}$")
+	return hclReg.MatchString(inp)
 }
 func validECL(inp string) bool {
 	eclReg := regexp.MustCompile("^(amb|blu|brn|gry|grn|hzl|oth)$")
