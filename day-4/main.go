@@ -6,11 +6,14 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
-	passports := getPassports()
+	passports := getPassports(true)
+	start := time.Now()
 	validatePassports(passports)
+	fmt.Println("\nTime taken:", time.Since(start))
 }
 
 func validatePassports(passports []map[string]string) {
@@ -50,8 +53,15 @@ func validatePassports(passports []map[string]string) {
 	fmt.Println(fmt.Sprintf("Valid passports\n\nPart 1: %v valid passports\n\nPart 2: %v valid passports", good1, good2))
 }
 
-func getPassports() []map[string]string {
-	data, _ := ioutil.ReadFile("./input.txt")
+func getPassports(chung bool) []map[string]string {
+
+	var data []byte
+	if chung {
+		data, _ = ioutil.ReadFile("./chungus.txt")
+	} else {
+		data, _ = ioutil.ReadFile("./input.txt")
+	}
+
 	lines := strings.Split(string(data), "\n\n")
 
 	var pps []map[string]string
@@ -84,6 +94,9 @@ func validEYR(inp string) bool {
 	return err == nil && year >= 2020 && year <= 2030
 }
 func validHGT(inp string) bool {
+	if len(inp) < 4 {
+		return false
+	}
 	val, units := inp[:len(inp)-2], inp[len(inp)-2:]
 	n, err := strconv.Atoi(val)
 	if err != nil {
@@ -97,15 +110,19 @@ func validHGT(inp string) bool {
 		return false
 	}
 }
+
+var (
+	hclReg = regexp.MustCompile("^#[0-9a-f]{6}$")
+	eclReg = regexp.MustCompile("^(amb|blu|brn|gry|grn|hzl|oth)$")
+	pidReg = regexp.MustCompile("^\\d{9}$")
+)
+
 func validHCL(inp string) bool {
-	hclReg := regexp.MustCompile("^#[0-9a-f]{6}$")
 	return hclReg.MatchString(inp)
 }
 func validECL(inp string) bool {
-	eclReg := regexp.MustCompile("^(amb|blu|brn|gry|grn|hzl|oth)$")
 	return eclReg.MatchString(inp)
 }
 func validPID(inp string) bool {
-	pidReg := regexp.MustCompile("^\\d{9}$")
 	return pidReg.MatchString(inp)
 }

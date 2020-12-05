@@ -7,9 +7,7 @@ import (
 )
 
 func main() {
-
 	inp := getInput()
-	//fmt.Println(inp)
 
 	fmt.Println("Part 1:")
 	part1(inp)
@@ -18,36 +16,26 @@ func main() {
 }
 
 func part1(inp Trees) {
-	trees := 0
-	for x, y := 0, 0; x < len(inp.trees); x, y = x+1, y+3 {
-		if inp.trees[x][y%len(inp.trees[x])] == 1 {
-			trees++
-		}
-	}
+	trees := findTrees(inp, 1, 3)
 	fmt.Println("Trees found:", trees)
 }
 
 func part2(inp Trees) {
-
 	moves := [][]int{{1, 1}, {1, 3}, {1, 5}, {1, 7}, {2, 1}}
-	var res []int
-
-	for _, move := range moves {
-		found := 0
-		for x, y := 0, 0; x < len(inp.trees); x, y = x+move[0], y+move[1] {
-			if inp.trees[x][y%len(inp.trees[x])] == 1 {
-				found++
-			}
-		}
-		res = append(res, found)
-	}
-
 	sum := 1
-	for i := 0; i < len(res); i++ {
-		sum *= res[i]
+	for _, move := range moves {
+		sum *= findTrees(inp, move[0], move[1])
 	}
-
 	fmt.Println("Multiplied trees encountered:", sum)
+}
+func findTrees(inp Trees, dx, dy int) int {
+	found := 0
+	for x, y := 0, 0; x < len(inp.trees); x, y = x+dx, y+dy {
+		if inp.trees[x][y%len(inp.trees[x])] == 1 {
+			found++
+		}
+	}
+	return found
 }
 
 func getInput() Trees {
