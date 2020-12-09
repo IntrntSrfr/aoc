@@ -58,18 +58,18 @@ func copy(l []*big.Int) []*big.Int {
 }
 
 func part2(inp []*big.Int, target *big.Int) *big.Int {
-	var lol []*big.Int
+	var l []*big.Int
 	total := big.NewInt(0)
 	for _, num := range inp {
 		total.Add(total, num)
-		lol = append(lol, num)
+		l = append(l, num)
 		for total.Cmp(target) > 0 {
-			total.Sub(total, lol[0])
-			lol = lol[1:]
+			total.Sub(total, l[0])
+			l = l[1:]
 		}
-		if total.Cmp(target) == 0 && len(lol) > 1 {
-			sort.Sort(SortBigInt(lol))
-			res := big.NewInt(0).Add(lol[0], lol[len(lol)-1])
+		if total.Cmp(target) == 0 && len(l) > 1 {
+			sort.Sort(SortBigInt(l))
+			res := big.NewInt(0).Add(l[0], l[len(l)-1])
 			return res
 		}
 	}
