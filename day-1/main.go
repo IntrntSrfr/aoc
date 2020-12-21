@@ -22,17 +22,13 @@ func main() {
 
 func part1(inp []int) {
 	start := time.Now()
-	found := false
+loop:
 	for i := 0; i < len(inp); i++ {
 		for j := i + 1; j < len(inp); j++ {
 			if inp[i]+inp[j] == 2020 {
 				fmt.Println(inp[i], inp[j], inp[i]*inp[j])
-				found = true
-				break
+				break loop
 			}
-		}
-		if found {
-			break
 		}
 	}
 	fmt.Println("time taken:", time.Now().Sub(start))
@@ -40,24 +36,19 @@ func part1(inp []int) {
 
 func part2(inp []int) {
 	start := time.Now()
-	found := false
+
+loop:
 	for i := 0; i < len(inp); i++ {
 		for j := i + 1; j < len(inp); j++ {
 			for k := j + 1; k < len(inp); k++ {
 				if inp[i]+inp[j]+inp[k] == 2020 {
 					fmt.Println(inp[i], inp[j], inp[k], inp[i]*inp[j]*inp[k])
-					found = true
-					break
+					break loop
 				}
 			}
-			if found {
-				break
-			}
-		}
-		if found {
-			break
 		}
 	}
+
 	fmt.Println("time taken:", time.Now().Sub(start).String())
 }
 
