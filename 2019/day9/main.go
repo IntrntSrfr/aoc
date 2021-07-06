@@ -124,7 +124,7 @@ func main() {
 	}
 }
 
-func extend(l *[]int, )
+func extend(l *[]int)
 
 func getList() []string {
 

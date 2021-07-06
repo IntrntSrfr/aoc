@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"time"
 )
 
 func main() {

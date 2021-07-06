@@ -35,8 +35,10 @@ func part2(inp [][]string) {
 				}
 
 			}
+
 			value, _ = strconv.ParseInt(string(valueStr), 2, 64)
 			mem[index] = value
+
 		}
 	}
 
