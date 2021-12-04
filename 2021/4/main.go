@@ -37,16 +37,13 @@ func solveBoards(numbers []int, boards []*Board) []int {
 
 type Board struct {
 	Finished bool
-	Cells    [][][]int
+	Cells    [][]int
 	RowCount []int
 	ColCount []int
 }
 
 func newBoard() *Board {
-	outer := make([][][]int, 5)
-	for i := range outer {
-		outer[i] = make([][]int, 5)
-	}
+	outer := make([][]int, 25)
 	return &Board{Cells: outer, RowCount: make([]int, 5), ColCount: make([]int, 5)}
 }
 
@@ -61,13 +58,11 @@ func (b *Board) bingo() bool {
 
 func (b *Board) mark(num int) {
 	for i := range b.Cells {
-		for j := range b.Cells[i] {
-			cell := b.Cells[i][j]
-			if cell[0] == num && cell[1] == 0 {
-				b.RowCount[i]++
-				b.ColCount[j]++
-				cell[1] = 1
-			}
+		cell := b.Cells[i]
+		if cell[0] == num && cell[1] == 0 {
+			b.RowCount[i/5]++
+			b.ColCount[i%5]++
+			cell[1] = 1
 		}
 	}
 }
@@ -75,11 +70,9 @@ func (b *Board) mark(num int) {
 func (b *Board) unmarkedSum() int {
 	sum := 0
 	for i := range b.Cells {
-		for j := range b.Cells[i] {
-			cell := b.Cells[i][j]
-			if cell[1] == 0 {
-				sum += cell[0]
-			}
+		cell := b.Cells[i]
+		if cell[1] == 0 {
+			sum += cell[0]
 		}
 	}
 	return sum
@@ -91,8 +84,6 @@ func getInputs() ([]int, []*Board) {
 	scanner := bufio.NewScanner(f)
 
 	var numbers []int
-
-	// first scan for numbers
 	scanner.Scan()
 	for _, n := range strings.Split(scanner.Text(), ",") {
 		nn, _ := strconv.Atoi(n)
@@ -100,21 +91,19 @@ func getInputs() ([]int, []*Board) {
 	}
 
 	var boards []*Board
-
-	// scan once for empty line
 	for scanner.Scan() {
 		b := newBoard()
-
-		// then scan each line with numbers
 		for i := 0; i < 5; i++ {
 			scanner.Scan()
 			f := strings.Fields(scanner.Text())
 			for j, ff := range f {
 				n, _ := strconv.Atoi(ff)
-				b.Cells[i][j] = []int{n, 0}
+				b.Cells[i*5+j] = []int{n, 0}
 			}
 		}
 		boards = append(boards, b)
 	}
 	return numbers, boards
 }
+
+
