@@ -37,15 +37,15 @@ func solveBoards(numbers []int, boards []*Board) []int {
 
 type Board struct {
 	Finished bool
-	Cells    [][]*Cell
+	Cells    [][][]int
 	RowCount []int
 	ColCount []int
 }
 
 func newBoard() *Board {
-	outer := make([][]*Cell, 5)
+	outer := make([][][]int, 5)
 	for i := range outer {
-		outer[i] = make([]*Cell, 5)
+		outer[i] = make([][]int, 5)
 	}
 	return &Board{Cells: outer, RowCount: make([]int, 5), ColCount: make([]int, 5)}
 }
@@ -63,10 +63,10 @@ func (b *Board) mark(num int) {
 	for i := range b.Cells {
 		for j := range b.Cells[i] {
 			cell := b.Cells[i][j]
-			if cell.Value == num {
+			if cell[0] == num && cell[1] == 0 {
 				b.RowCount[i]++
 				b.ColCount[j]++
-				cell.Marked = true
+				cell[1] = 1
 			}
 		}
 	}
@@ -77,17 +77,12 @@ func (b *Board) unmarkedSum() int {
 	for i := range b.Cells {
 		for j := range b.Cells[i] {
 			cell := b.Cells[i][j]
-			if !cell.Marked {
-				sum += cell.Value
+			if cell[1] == 0 {
+				sum += cell[0]
 			}
 		}
 	}
 	return sum
-}
-
-type Cell struct {
-	Value  int
-	Marked bool
 }
 
 func getInputs() ([]int, []*Board) {
@@ -116,7 +111,7 @@ func getInputs() ([]int, []*Board) {
 			f := strings.Fields(scanner.Text())
 			for j, ff := range f {
 				n, _ := strconv.Atoi(ff)
-				b.Cells[i][j] = &Cell{Value: n}
+				b.Cells[i][j] = []int{n, 0}
 			}
 		}
 		boards = append(boards, b)
