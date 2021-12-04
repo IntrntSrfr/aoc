@@ -11,12 +11,12 @@ import (
 func main() {
 	numbers, boards := getInputs()
 	finished := solveBoards(numbers, boards)
-	fmt.Println("part 1:", finished[0].unmarked()*finished[0].LastNum)
-	fmt.Println("part 2:", finished[len(finished)-1].unmarked()*finished[len(finished)-1].LastNum)
+	fmt.Println("part 1:", finished[0])
+	fmt.Println("part 2:", finished[len(finished)-1])
 }
 
-func solveBoards(numbers []int, boards []*Board) []*Board {
-	finished := []*Board{}
+func solveBoards(numbers []int, boards []*Board) []int {
+	finished := []int{}
 	for _, num := range numbers {
 		for _, board := range boards {
 			if board.Finished {
@@ -25,8 +25,7 @@ func solveBoards(numbers []int, boards []*Board) []*Board {
 			board.mark(num)
 			if board.bingo() {
 				board.Finished = true
-				board.LastNum = num
-				finished = append(finished, board)
+				finished = append(finished, board.unmarkedSum()*num)
 			}
 		}
 		if len(finished) == len(boards) {
@@ -37,9 +36,10 @@ func solveBoards(numbers []int, boards []*Board) []*Board {
 }
 
 type Board struct {
-	LastNum  int
 	Finished bool
 	Cells    [][]*Cell
+	RowCount []int
+	ColCount []int
 }
 
 func newBoard() *Board {
@@ -47,38 +47,15 @@ func newBoard() *Board {
 	for i := range outer {
 		outer[i] = make([]*Cell, 5)
 	}
-	return &Board{Cells: outer}
+	return &Board{Cells: outer, RowCount: make([]int, 5), ColCount: make([]int, 5)}
 }
 
 func (b *Board) bingo() bool {
-	// check if any horizontal line has bingo
-	for i := range b.Cells {
-		count := 0
-		for j := range b.Cells[i] {
-			cell := b.Cells[i][j]
-			if cell.Marked {
-				count++
-			}
-		}
-		if count == 5 {
-			return true
-		}
-	}
-
-	// check if any vertical line has bingo
 	for i := 0; i < 5; i++ {
-		count := 0
-		for j := 0; j < 5; j++ {
-			cell := b.Cells[j][i]
-			if cell.Marked {
-				count++
-			}
-		}
-		if count == 5 {
+		if b.RowCount[i] == 5 || b.ColCount[i] == 5 {
 			return true
 		}
 	}
-
 	return false
 }
 
@@ -87,13 +64,15 @@ func (b *Board) mark(num int) {
 		for j := range b.Cells[i] {
 			cell := b.Cells[i][j]
 			if cell.Value == num {
+				b.RowCount[i]++
+				b.ColCount[j]++
 				cell.Marked = true
 			}
 		}
 	}
 }
 
-func (b *Board) unmarked() int {
+func (b *Board) unmarkedSum() int {
 	sum := 0
 	for i := range b.Cells {
 		for j := range b.Cells[i] {
