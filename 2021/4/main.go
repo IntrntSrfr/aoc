@@ -88,7 +88,7 @@ func (b *Board) unmarkedSum() int {
 }
 
 func getInputs() ([]int, []*Board) {
-	f, _ := os.Open("./large.txt")
+	f, _ := os.Open("./input.txt")
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 

@@ -15,11 +15,9 @@ func main() {
 }
 
 func solve(state map[int]int, days int) {
-	iters := 0
 	for day := 0; day < days; day++ {
 		newState := make(map[int]int)
 		for i, n := range state {
-			iters++
 			if i == 0 {
 				newState[6] += n
 				newState[8] += n
@@ -29,7 +27,6 @@ func solve(state map[int]int, days int) {
 		}
 		state = newState
 	}
-	fmt.Println(iters)
 	fmt.Println(sum(state))
 }
 
