@@ -6,11 +6,20 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
+var boardSize = 15
+
 func main() {
+	parserStart := time.Now()
 	numbers, boards := getInputs()
+	fmt.Println("time taken to parse:", time.Since(parserStart))
+
+	start := time.Now()
 	finished := solveBoards(numbers, boards)
+	fmt.Println("time taken to solve all boards:", time.Since(start))
+
 	fmt.Println("part 1:", finished[0])
 	fmt.Println("part 2:", finished[len(finished)-1])
 }
@@ -43,13 +52,13 @@ type Board struct {
 }
 
 func newBoard() *Board {
-	outer := make([][]int, 25)
-	return &Board{Cells: outer, RowCount: make([]int, 5), ColCount: make([]int, 5)}
+	outer := make([][]int, boardSize*boardSize)
+	return &Board{Cells: outer, RowCount: make([]int, boardSize), ColCount: make([]int, boardSize)}
 }
 
 func (b *Board) bingo() bool {
-	for i := 0; i < 5; i++ {
-		if b.RowCount[i] == 5 || b.ColCount[i] == 5 {
+	for i := 0; i < boardSize; i++ {
+		if b.RowCount[i] == boardSize || b.ColCount[i] == boardSize {
 			return true
 		}
 	}
@@ -60,8 +69,8 @@ func (b *Board) mark(num int) {
 	for i := range b.Cells {
 		cell := b.Cells[i]
 		if cell[0] == num && cell[1] == 0 {
-			b.RowCount[i/5]++
-			b.ColCount[i%5]++
+			b.RowCount[i/boardSize]++
+			b.ColCount[i%boardSize]++
 			cell[1] = 1
 		}
 	}
@@ -79,7 +88,7 @@ func (b *Board) unmarkedSum() int {
 }
 
 func getInputs() ([]int, []*Board) {
-	f, _ := os.Open("./input.txt")
+	f, _ := os.Open("./large.txt")
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 
@@ -93,17 +102,15 @@ func getInputs() ([]int, []*Board) {
 	var boards []*Board
 	for scanner.Scan() {
 		b := newBoard()
-		for i := 0; i < 5; i++ {
+		for i := 0; i < boardSize; i++ {
 			scanner.Scan()
 			f := strings.Fields(scanner.Text())
 			for j, ff := range f {
 				n, _ := strconv.Atoi(ff)
-				b.Cells[i*5+j] = []int{n, 0}
+				b.Cells[i*boardSize+j] = []int{n, 0}
 			}
 		}
 		boards = append(boards, b)
 	}
 	return numbers, boards
 }
-
-
