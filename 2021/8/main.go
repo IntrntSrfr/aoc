@@ -79,6 +79,7 @@ func part2(inp [][]uint) {
 	fmt.Println("part 2 answer:", sum)
 }
 
+// finds codes in list that has `count` amount of ones
 func cwbc(a []uint, count int) []uint {
 	var res []uint
 	for _, i := range a {
