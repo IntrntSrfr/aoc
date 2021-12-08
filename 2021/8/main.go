@@ -3,60 +3,24 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/bits"
 	"os"
+	"strconv"
 	"strings"
 )
 
 func main() {
-
-	fmt.Println(intersect("abcdfg", "abcdefg"))
-	fmt.Println(complement("abcdfg", "abcdefg"))
-
-	/*
-		inp := getInputs()
-		//count := 0
-		for _, line := range inp {
-			//mapping := make(map[string]string)
-			fmt.Println(line[:10])
-				for _, code := range line[:10] {
-					fmt.Println(code)
-				}
-			}
-	*/
-}
-
-func intersect(a, b string) string {
-	res := ""
-	for _, c1 := range a {
-		if strings.Contains(b, string(c1)) {
-			res += string(c1)
-		}
-	}
-	return res
-}
-
-func complement(a, b string) string {
-	str := "abcdef"
-	res := ""
-
-	isct := intersect(a, b)
-
-	for _, c1 := range str {
-		if !strings.Contains(isct, string(c1)) {
-			res += string(c1)
-		}
-	}
-
-	return res
-}
-
-func part1() {
 	inp := getInputs()
+	part1(inp)
+	part2(inp)
+}
+
+func part1(inp [][]uint) {
 	count := 0
 	for _, line := range inp {
-		for _, code := range line[11:] {
-			n := getDigit(code)
-			if n == 1 || n == 7 || n == 4 || n == 8 {
+		for _, code := range line[10:] {
+			n := bits.OnesCount(code)
+			if n == 2 || n == 3 || n == 4 || n == 7 {
 				count++
 			}
 		}
@@ -64,52 +28,102 @@ func part1() {
 	fmt.Println(count)
 }
 
-func getDigit(encoding string) int {
-	switch len(encoding) {
-	case 2:
-		return 1
-	case 3:
-		return 7
-	case 4:
-		return 4
-	case 7:
-		return 8
-	case 5:
-		// nums can be 5, 2 or 3
-		if strings.Contains(encoding, "a") && strings.Contains(encoding, "d") && strings.Contains(encoding, "g") {
-			// strings must contain a, d or g
-			if strings.Contains(encoding, "c") && strings.Contains(encoding, "e") {
-				return 2
-			} else if strings.Contains(encoding, "c") && strings.Contains(encoding, "f") {
-				return 3
-			} else if strings.Contains(encoding, "b") && strings.Contains(encoding, "f") {
-				return 5
+func part2(inp [][]uint) {
+
+	sum := 0
+	for _, line := range inp {
+		one, seven, four, eight := cwbc(line[:10], 2)[0], cwbc(line[:10], 3)[0], cwbc(line[:10], 4)[0], cwbc(line[:10], 7)[0]
+		a := (one | seven) & (0b1111111 ^ one)
+		var b uint
+		var d uint
+		var g uint = 0b1111111
+		for _, n := range cwbc(line[:10], 6) {
+			bitset := (four & (0b1111111 ^ seven))
+			if bits.OnesCount(bitset&n) == 1 {
+				b = (bitset & n)
+				d = (bitset & (0b1111111 ^ n))
 			}
+			g &= n
 		}
-	case 6:
-		// nums can be 0, 6 or 9
-		if strings.Contains(encoding, "a") && strings.Contains(encoding, "b") && strings.Contains(encoding, "f") && strings.Contains(encoding, "g") {
-			// strings must contain a, b, f or g
-			if strings.Contains(encoding, "c") && strings.Contains(encoding, "e") {
-				return 0
-			} else if strings.Contains(encoding, "d") && strings.Contains(encoding, "e") {
-				return 6
-			} else if strings.Contains(encoding, "c") && strings.Contains(encoding, "d") {
-				return 9
-			}
+		transfer := g
+		g &= (0b1111111 ^ (four | a))
+		e := eight & (0b1111111 ^ (four | a | g))
+		c := eight & (0b1111111 ^ (transfer | e | d))
+		f := eight & (0b1111111 ^ (a | b | c | d | e | g))
+
+		mapping := map[uint]string{
+			a | b | c | e | f | g:     "0",
+			c | f:                     "1",
+			a | c | d | e | g:         "2",
+			a | c | d | f | g:         "3",
+			b | c | d | f:             "4",
+			a | b | d | f | g:         "5",
+			a | b | d | e | f | g:     "6",
+			a | c | f:                 "7",
+			a | b | c | d | e | f | g: "8",
+			a | b | c | d | f | g:     "9",
 		}
+
+		str := ""
+		for _, ye := range line[10:] {
+			str += mapping[ye]
+		}
+		num, _ := strconv.Atoi(str)
+		sum += num
 	}
-	return -1
+	fmt.Println(sum)
 }
 
-func getInputs() [][]string {
+func cwbc(a []uint, count int) []uint {
+	var res []uint
+	for _, i := range a {
+		if bits.OnesCount(i) == count {
+			res = append(res, i)
+		}
+	}
+	return res
+}
+
+func codeToInt(code string) uint {
+	var res uint
+	for _, c := range code {
+		switch c {
+		case 'a':
+			res += (1 << 6)
+		case 'b':
+			res += (1 << 5)
+		case 'c':
+			res += (1 << 4)
+		case 'd':
+			res += (1 << 3)
+		case 'e':
+			res += (1 << 2)
+		case 'f':
+			res += (1 << 1)
+		case 'g':
+			res += 1
+		}
+	}
+	return res
+}
+
+func getInputs() [][]uint {
 	f, _ := os.Open("./input.txt")
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 
-	var lines [][]string
+	var lines [][]uint
 	for scanner.Scan() {
-		lines = append(lines, strings.Fields(scanner.Text()))
+		line := scanner.Text()
+		line = strings.ReplaceAll(line, "|", "")
+		fields := strings.Fields(line)
+
+		var ints []uint
+		for _, numStr := range fields {
+			ints = append(ints, codeToInt(numStr))
+		}
+
+		lines = append(lines, ints)
 	}
 	return lines
 }
