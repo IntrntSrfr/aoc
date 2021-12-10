@@ -6,6 +6,8 @@ import (
 	"os"
 	"sort"
 	"time"
+
+	"github.com/intrntsrfr/aoc/utils"
 )
 
 func main() {
@@ -41,7 +43,7 @@ func findMinima(grid [][]int) [][]int {
 			minima = append(minima, []int{y, x, v})
 		}
 	}
-	fmt.Println("part 1 answer:", sumCoords(minima)+len(minima))
+	fmt.Println("part 1 answer:", utils.SumNthPos(minima, 2)+len(minima))
 	return minima
 }
 
@@ -53,7 +55,7 @@ func part2(grid [][]int, minima [][]int) {
 		pos := minimum[0]*width + minimum[1]
 		visited[pos] = true
 		size := 0
-		q := NewQueue()
+		q := utils.NewQueue()
 		q.Push(minimum)
 		for !q.IsEmpty() {
 			ye := q.Pop()
@@ -90,23 +92,7 @@ func part2(grid [][]int, minima [][]int) {
 		basins = append(basins, size)
 	}
 	sort.Ints(basins)
-	fmt.Println("part 2 answer:", product(basins[len(basins)-3:]))
-}
-
-func product(a []int) int {
-	sum := 1
-	for _, v := range a {
-		sum *= v
-	}
-	return sum
-}
-
-func sumCoords(g [][]int) int {
-	sum := 0
-	for _, v := range g {
-		sum += v[2]
-	}
-	return sum
+	fmt.Println("part 2 answer:", utils.Product(basins[len(basins)-3:]))
 }
 
 func getInputs() [][]int {
@@ -123,31 +109,4 @@ func getInputs() [][]int {
 		grid = append(grid, ints)
 	}
 	return grid
-}
-
-type Queue struct {
-	data [][]int
-}
-
-func NewQueue() *Queue {
-	return &Queue{
-		data: [][]int{},
-	}
-}
-
-func (q *Queue) IsEmpty() bool {
-	return len(q.data) == 0
-}
-
-func (q *Queue) Push(v []int) {
-	q.data = append(q.data, v)
-}
-
-func (q *Queue) Pop() []int {
-	if q.IsEmpty() {
-		return []int{}
-	}
-	v := q.data[0]
-	q.data = q.data[1:]
-	return v
 }
