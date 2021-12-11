@@ -11,16 +11,25 @@ import (
 	"github.com/intrntsrfr/aoc/utils"
 )
 
-func main() {
+func getInputs()[]string{
 	f, _ := os.Open("./10_7000_10000.txt")
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines
+}
+
+func main() {
+	inp := getInputs()
+	
 	start := time.Now()
 	p1Score := big.NewInt(0)
 	p2Scores := []*big.Int{}
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line:=range inp {
 		valid, s := isValid(line)
 		if !valid {
 			p1Score = p1Score.Add(p1Score, s)
