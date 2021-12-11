@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var boardSize = 15
+var boardSize = 5
 
 func main() {
 	parserStart := time.Now()
@@ -34,7 +34,7 @@ func solveBoards(numbers []int, boards []*Board) []int {
 			board.mark(num)
 			if board.bingo() {
 				board.Finished = true
-				finished = append(finished, board.unmarkedSum()*num)
+				finished = append(finished, board.UnmarkedSum*num)
 			}
 		}
 		if len(finished) == len(boards) {
@@ -45,10 +45,11 @@ func solveBoards(numbers []int, boards []*Board) []int {
 }
 
 type Board struct {
-	Finished bool
-	Cells    [][]int
-	RowCount []int
-	ColCount []int
+	Finished    bool
+	Cells       [][]int
+	RowCount    []int
+	ColCount    []int
+	UnmarkedSum int
 }
 
 func newBoard() *Board {
@@ -69,22 +70,12 @@ func (b *Board) mark(num int) {
 	for i := range b.Cells {
 		cell := b.Cells[i]
 		if cell[0] == num && cell[1] == 0 {
+			b.UnmarkedSum -= num
 			b.RowCount[i/boardSize]++
 			b.ColCount[i%boardSize]++
 			cell[1] = 1
 		}
 	}
-}
-
-func (b *Board) unmarkedSum() int {
-	sum := 0
-	for i := range b.Cells {
-		cell := b.Cells[i]
-		if cell[1] == 0 {
-			sum += cell[0]
-		}
-	}
-	return sum
 }
 
 func getInputs() ([]int, []*Board) {
@@ -108,6 +99,7 @@ func getInputs() ([]int, []*Board) {
 			for j, ff := range f {
 				n, _ := strconv.Atoi(ff)
 				b.Cells[i*boardSize+j] = []int{n, 0}
+				b.UnmarkedSum += n
 			}
 		}
 		boards = append(boards, b)
