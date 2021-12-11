@@ -42,15 +42,15 @@ func part2(inp [][]uint) {
 		var d uint
 		var g uint = 0b1111111
 		for _, n := range cwbc(line[:10], 6) {
-			bitset := (four & (0b1111111 ^ seven))
+			bitset := four & (0b1111111 ^ seven)
 			if bits.OnesCount(bitset&n) == 1 {
-				b = (bitset & n)
-				d = (bitset & (0b1111111 ^ n))
+				b = bitset & n
+				d = bitset & (0b1111111 ^ n)
 			}
 			g &= n
 		}
 		transfer := g
-		g &= (0b1111111 ^ (four | a))
+		g &= 0b1111111 ^ (four | a)
 		e := eight & (0b1111111 ^ (four | a | g))
 		c := eight & (0b1111111 ^ (transfer | e | d))
 		f := eight & (0b1111111 ^ (a | b | c | d | e | g))
@@ -95,17 +95,17 @@ func codeToInt(code string) uint {
 	for _, c := range code {
 		switch c {
 		case 'a':
-			res += (1 << 6)
+			res += 1 << 6
 		case 'b':
-			res += (1 << 5)
+			res += 1 << 5
 		case 'c':
-			res += (1 << 4)
+			res += 1 << 4
 		case 'd':
-			res += (1 << 3)
+			res += 1 << 3
 		case 'e':
-			res += (1 << 2)
+			res += 1 << 2
 		case 'f':
-			res += (1 << 1)
+			res += 1 << 1
 		case 'g':
 			res += 1
 		}
