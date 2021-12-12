@@ -29,8 +29,9 @@ func main() {
 
 	//bufGrid := deepcopy(grid)
 	utils.DisplayGrid(grid)
+	flashes := 0
 
-	for t := 0; t < 2; t++ {
+	for t := 0; t < 10; t++ {
 		// increase every value by 1
 		for y := range grid {
 			for x := range grid[y] {
@@ -38,26 +39,28 @@ func main() {
 			}
 		}
 
-		visitMap := make(map[string]bool)
+		hasFlashed := make(map[string]bool)
 
 		for y := range grid {
 			for x := range grid[y] {
 				if grid[y][x] > 9 {
 					grid[y][x] = 0
-					visitMap[makeKey(y, x)] = true
-					increaseNeighbours(grid, y, x, visitMap)
+					hasFlashed[makeKey(y, x)] = true
+					increaseNeighbours(grid, y, x, hasFlashed)
 
 					// increase neighbours by 1
 					// if neighbour > 9 then do this step for them too
 					// this can happen only once for each cell
-
 				}
 			}
 		}
 
+		flashes += len(hasFlashed)
+
 		utils.DisplayGrid(grid)
 	}
 
+	fmt.Println(flashes)
 	//fmt.Println(grid)
 
 }
@@ -66,24 +69,23 @@ func makeKey(y, x int) string {
 	return fmt.Sprintf("%v-%v", y, x)
 }
 
-func increaseNeighbours(grid [][]int, x, y int, visitMap map[string]bool) {
+func increaseNeighbours(grid [][]int, x, y int, hasFlashed map[string]bool) {
 	// 0 = y, 1 = x
 	moves := [][]int{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}
 
 	for _, move := range moves {
 		newY, newX := move[0]+y, move[1]+x
 		// assume nxn grid
-		if newY < 0 || newX < 0 || newY > len(grid)-1 || newX > len(grid) {
+		if newY < 0 || newX < 0 || newY > len(grid)-1 || newX > len(grid)-1 {
 			continue
 		}
-		if !visitMap[makeKey(newY, newX)] {
-
+		if !hasFlashed[makeKey(newY, newX)] {
+			grid[newY][newX]++
 		}
-		grid[newY][newX]++
-		if grid[newY][newX] > 9 {
+		if grid[newY][newX] > 9 && !hasFlashed[makeKey(newY, newX)] {
 			grid[newY][newX] = 0
-			visitMap[makeKey(newY, newX)] = true
-			increaseNeighbours(grid, newY, newX, visitMap)
+			hasFlashed[makeKey(newY, newX)] = true
+			increaseNeighbours(grid, newY, newX, hasFlashed)
 		}
 	}
 }
