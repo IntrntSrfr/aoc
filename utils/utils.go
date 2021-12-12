@@ -1,12 +1,20 @@
 package utils
 
 import (
+	"fmt"
 	"math/big"
 	"sort"
 )
 
+func DisplayGrid(g [][]int) {
+	fmt.Println("grid display:")
+	for _, v := range g {
+		fmt.Println(v)
+	}
+}
+
 func PadStringGrid() {
-	
+
 }
 
 type BigIntSlice []*big.Int

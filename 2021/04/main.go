@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var boardSize = 5
+var boardSize = 30
 
 func main() {
 	parserStart := time.Now()
@@ -79,9 +79,9 @@ func (b *Board) mark(num int) {
 }
 
 func getInputs() ([]int, []*Board) {
-	f, _ := os.Open("./input.txt")
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+	//f, _ := os.Open("./input.txt")
+	//defer f.Close()
+	scanner := bufio.NewScanner(os.Stdin)
 
 	var numbers []int
 	scanner.Scan()

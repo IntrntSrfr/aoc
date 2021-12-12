@@ -11,10 +11,10 @@ import (
 	"github.com/intrntsrfr/aoc/utils"
 )
 
-func getInputs()[]string{
-	f, _ := os.Open("./10_7000_10000.txt")
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+func getInputs() []string {
+	//f, _ := os.Open("./10_7000_10000.txt")
+	//defer f.Close()
+	scanner := bufio.NewScanner(os.Stdin)
 
 	var lines []string
 	for scanner.Scan() {
@@ -25,11 +25,11 @@ func getInputs()[]string{
 
 func main() {
 	inp := getInputs()
-	
+
 	start := time.Now()
 	p1Score := big.NewInt(0)
 	p2Scores := []*big.Int{}
-	for _, line:=range inp {
+	for _, line := range inp {
 		valid, s := isValid(line)
 		if !valid {
 			p1Score = p1Score.Add(p1Score, s)
@@ -37,10 +37,10 @@ func main() {
 			p2Scores = append(p2Scores, s)
 		}
 	}
-	fmt.Println("part 1 answer:", p1Score)
-	sort.Sort(utils.BigIntSlice(p2Scores))
-	fmt.Println("part 2 answer:", p2Scores[len(p2Scores)/2])
 	fmt.Println("time taken:", time.Since(start))
+	sort.Sort(utils.BigIntSlice(p2Scores))
+	fmt.Println("part 1 answer:", p1Score)
+	fmt.Println("part 2 answer:", p2Scores[len(p2Scores)/2])
 }
 
 func isValid(s string) (bool, *big.Int) {
