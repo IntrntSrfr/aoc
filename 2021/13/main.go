@@ -12,7 +12,7 @@ import (
 func main() {
 	grid, folds := getInputs()
 	for i, fold := range folds {
-		grid = foldGrid(grid, fold[0], fold[1])
+		grid = foldGrid(grid, fold)
 		if i == 0 {
 			fmt.Println("part 1:", utils.Sum2DGrid(grid))
 		}
@@ -20,9 +20,9 @@ func main() {
 	display(grid)
 }
 
-func foldGrid(grid [][]int, foldY int, value int) [][]int {
+func foldGrid(grid [][]int, axis string) [][]int {
 	var newGrid [][]int
-	if foldY == 1 {
+	if axis == "y" {
 		newGrid = utils.MxNGrid(len(grid)/2, len(grid[0])) // fold y axis
 		for y := range newGrid {
 			for x := range newGrid[y] {
@@ -40,11 +40,12 @@ func foldGrid(grid [][]int, foldY int, value int) [][]int {
 	return newGrid
 }
 
-func getInputs() ([][]int, [][]int) {
+func getInputs() ([][]int, []string) {
 	scanner := bufio.NewScanner(os.Stdin)
-	grid := make([][]int, 55)
+
+	grid := make([][]int, 895)
 	for y := range grid {
-		grid[y] = make([]int, 30)
+		grid[y] = make([]int, 1311)
 	}
 
 	for scanner.Scan() {
@@ -57,15 +58,10 @@ func getInputs() ([][]int, [][]int) {
 		grid[y][x] = 1
 	}
 
-	var folds [][]int
+	var folds []string
 	for scanner.Scan() {
 		ye := strings.Split(scanner.Text(), "=")
-		value, _ := strconv.Atoi(ye[1])
-		if ye[0][len(ye[0])-1] == 'x' {
-			folds = append(folds, []int{0, value})
-			continue
-		}
-		folds = append(folds, []int{1, value})
+		folds = append(folds, string(ye[0][len(ye[0])-1]))
 	}
 	return grid, folds
 }
