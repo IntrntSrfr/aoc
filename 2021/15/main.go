@@ -5,18 +5,23 @@ import (
 	"fmt"
 	"github.com/intrntsrfr/aoc/utils"
 	"os"
+	"time"
 )
 
-//var moves = [][]int{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}
-var moves = [][]int{{0, 1}, {1, 0}}
+var moves = [][]int{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}
 
 func main() {
+	tstart := time.Now()
 	grid := getInputs()
-	shortestPathScore(grid, []int{0, 0}, []int{99, 99})
+	p1start := time.Now()
+	fmt.Println("part 1 answer:", shortestPathScore(grid, []int{0, 0}, []int{99, 99}))
+	fmt.Println("part 1 time:", time.Since(p1start))
 
 	newGrid := tileGrid(grid)
-	//utils.DisplayGrid(newGrid)
-	shortestPathScore(newGrid, []int{0, 0}, []int{499, 499})
+	p2start := time.Now()
+	fmt.Println("part 2 answer:", shortestPathScore(newGrid, []int{0, 0}, []int{499, 499}))
+	fmt.Println("part 2 time:", time.Since(p2start))
+	fmt.Println("total time:", time.Since(tstart))
 }
 
 func tileGrid(grid [][]int) [][]int {
@@ -37,7 +42,7 @@ func tileGrid(grid [][]int) [][]int {
 	return newGrid
 }
 
-func shortestPathScore(grid [][]int, start, end []int) {
+func shortestPathScore(grid [][]int, start, end []int) int {
 	var visited = make(map[string]bool)
 	var predecessors = make(map[string][]int)
 	var cellCosts = make(map[string]int)
@@ -77,7 +82,7 @@ func shortestPathScore(grid [][]int, start, end []int) {
 		score += grid[cur[0]][cur[1]]
 		cur = predecessors[makeKey(cur[0], cur[1])]
 	}
-	fmt.Println("score", score)
+	return score
 }
 
 func MDistance(y0, x0, y1, x1 int) int {
