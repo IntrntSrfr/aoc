@@ -4,13 +4,26 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/intrntsrfr/aoc/utils"
+	"log"
 	"os"
+	"runtime/pprof"
+	"sort"
 	"time"
 )
 
 var moves = [][]int{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}
 
+// please change the pque from a linked list to heap
+
 func main() {
+
+	f, err := os.Create("./profile")
+	if err != nil {
+		log.Fatal(err)
+	}
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	tstart := time.Now()
 	grid := getInputs()
 	p1start := time.Now()
@@ -47,14 +60,20 @@ func shortestPathScore(grid [][]int, start, end []int) int {
 	var predecessors = make(map[string][]int)
 	var cellCosts = make(map[string]int)
 
-	pq := NewPrioQueue()
+	//pq := NewPrioQueue()
+	pq := []*Node{}
 
-	pq.Enqueue(&Node{Data: start, Prio: 0})
+	pq = append(pq, &Node{Data: start, Prio: 0})
+
+	//pq.Enqueue(&Node{Data: start, Prio: 0})
 	predecessors[makeKey(start[0], start[1])] = start
 	visited[makeKey(start[0], start[1])] = true
 
-	for !pq.Empty() {
-		n := pq.Dequeue()
+	//for !pq.Empty() {
+	for len(pq) != 0 {
+		sort.Sort(CoordList(pq))
+		n := pq[0]
+		pq = pq[1:]
 		curY, curX := n.Data[0], n.Data[1]
 		cur := n.Data
 		if curY == len(grid)-1 && curX == len(grid[0])-1 {
@@ -68,7 +87,8 @@ func shortestPathScore(grid [][]int, start, end []int) int {
 			key := makeKey(newY, newX)
 			newCost := grid[newY][newX] + n.Prio // + MDistance(newY, newX, end[0], end[1])
 			if !visited[key] || newCost < cellCosts[key] {
-				pq.Enqueue(&Node{Data: []int{newY, newX}, Prio: newCost})
+				pq = append(pq, &Node{Data: []int{newY, newX}, Prio: newCost})
+				//pq.Enqueue(&Node{Data: []int{newY, newX}, Prio: newCost})
 				predecessors[key] = cur
 				cellCosts[key] = newCost
 				visited[key] = true
@@ -108,6 +128,20 @@ func getInputs() [][]int {
 		res = append(res, lineRes)
 	}
 	return res
+}
+
+type CoordList []*Node
+
+func (c CoordList) Len() int {
+	return len(c)
+}
+
+func (c CoordList) Less(i, j int) bool {
+	return c[i].Prio < c[j].Prio
+}
+
+func (c CoordList) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
 }
 
 type PrioQueue struct {
