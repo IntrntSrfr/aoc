@@ -31,38 +31,37 @@ func main() {
 	utils.DisplayGrid(grid)
 	flashes := 0
 
-	for t := 0; t < 10; t++ {
+	for t := 0; t < 2; t++ {
 		// increase every value by 1
 		for y := range grid {
 			for x := range grid[y] {
 				grid[y][x]++
 			}
 		}
+		utils.DisplayGrid(grid)
 
 		hasFlashed := make(map[string]bool)
 
 		for y := range grid {
 			for x := range grid[y] {
 				if grid[y][x] > 9 {
+					key := makeKey(y, x)
+					fmt.Println("value over 9:", key)
 					grid[y][x] = 0
-					hasFlashed[makeKey(y, x)] = true
+					hasFlashed[key] = true
 					increaseNeighbours(grid, y, x, hasFlashed)
-
-					// increase neighbours by 1
-					// if neighbour > 9 then do this step for them too
-					// this can happen only once for each cell
 				}
 			}
 		}
 
 		flashes += len(hasFlashed)
 
+		fmt.Println("after step:", t+1)
 		utils.DisplayGrid(grid)
+		fmt.Println("")
 	}
-
 	fmt.Println(flashes)
 	//fmt.Println(grid)
-
 }
 
 func makeKey(y, x int) string {
@@ -79,12 +78,15 @@ func increaseNeighbours(grid [][]int, x, y int, hasFlashed map[string]bool) {
 		if newY < 0 || newX < 0 || newY > len(grid)-1 || newX > len(grid)-1 {
 			continue
 		}
-		if !hasFlashed[makeKey(newY, newX)] {
+
+		key := makeKey(newY, newX)
+
+		if !hasFlashed[key] {
 			grid[newY][newX]++
 		}
-		if grid[newY][newX] > 9 && !hasFlashed[makeKey(newY, newX)] {
+		if grid[newY][newX] > 9 && !hasFlashed[key] {
 			grid[newY][newX] = 0
-			hasFlashed[makeKey(newY, newX)] = true
+			hasFlashed[key] = true
 			increaseNeighbours(grid, newY, newX, hasFlashed)
 		}
 	}

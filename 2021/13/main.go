@@ -7,17 +7,23 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
 	grid, folds := getInputs()
+	start := time.Now()
 	for i, fold := range folds {
 		grid = foldGrid(grid, fold)
 		if i == 0 {
 			fmt.Println("part 1:", utils.Sum2DGrid(grid))
 		}
 	}
+	taken := time.Since(start)
+	fmt.Println(len(grid), len(grid[0]))
 	display(grid)
+	fmt.Println("time taken:", taken)
+
 }
 
 func foldGrid(grid [][]int, axis string) [][]int {
@@ -42,10 +48,12 @@ func foldGrid(grid [][]int, axis string) [][]int {
 
 func getInputs() ([][]int, []string) {
 	scanner := bufio.NewScanner(os.Stdin)
+	maxY, _ := strconv.Atoi(os.Args[1])
+	maxX, _ := strconv.Atoi(os.Args[2])
 
-	grid := make([][]int, 895)
+	grid := make([][]int, maxY)
 	for y := range grid {
-		grid[y] = make([]int, 1311)
+		grid[y] = make([]int, maxX)
 	}
 
 	for scanner.Scan() {
