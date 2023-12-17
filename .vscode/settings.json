@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "*.txt": "txt",
-        "inp": "txt"
+        "*.txt": "plaintext",
+        "inp": "plaintext"
     }
 }
