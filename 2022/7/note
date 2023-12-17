@@ -1,0 +1,4 @@
+go down tree
+for each thing found in the tree
+split the path for the found file
+increment the size for each folder of the split path by the amount of the found file
