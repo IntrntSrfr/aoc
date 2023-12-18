@@ -1,55 +1,50 @@
-inp = [list(row.strip()) for row in open('inp').readlines()]
-#print(inp)
+inp = [list(row.strip()) for row in open("inp").readlines()]
+directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-dirs = {
-    '|': [[0, -1], [0, 1]],
-    '-': [[-1, 0], [1, 0]],
-    'L': [[0, -1], [1, 0]],
-    'J': [[0, -1], [-1, 0]],
-    '7': [[0, 1], [-1, 0]],
-    'F': [[0, 1], [1, 0]],
+representations = {
+    "|": [".#.", ".#.", ".#."],
+    "-": ["...", "###", "..."],
+    "L": [".#.", ".##", "..."],
+    "J": [".#.", "##.", "..."],
+    "7": ["...", "##.", ".#."],
+    "F": ["...", ".##", ".#."],
+    ".": ["...", "...", "..."],
 }
 
-def find_start(inp: list[list[str]]) -> tuple[int, int]:
-    for y, row in enumerate(inp):
-        if 'S' in row:
-            return (row.index('S'), y)
-    return (-1, -1)
-
-#def find_start_tile(inp: list[list[str]]):
-
-def bfs(start: tuple[int, int], start_tile = 'F'):
-    visited = [start]
-    q = [start]
-    inp[start[1]][start[0]] = start_tile
-    nums = [[0 for _ in range(len(inp[0]))] for _ in range(len(inp))]
-    max_num = 0
-    while q:
-        cur = q.pop(0)
-        cur_dirs = dirs[inp[cur[1]][cur[0]]]
-        for dir in cur_dirs:
-            n_x, n_y = cur[0] + dir[0], cur[1] + dir[1]
-            if (n_x, n_y) not in visited:
-                q.append((n_x, n_y))
-                nums[n_y][n_x] = nums[cur[1]][cur[0]] + 1
-                if nums[n_y][n_x] > max_num:
-                    max_num = nums[n_y][n_x]
-                visited.append((n_x, n_y))
-    return max_num, visited
-
-max_num, visited = bfs(find_start(inp), 'F')
-print(visited)
+def scale_up_grid(original_grid, fallback="F"):
+    scaled_grid = []
+    src = (-1, -1)
+    for y, row in enumerate(original_grid):
+        new_rows = ["", "", ""]
+        for x, tile in enumerate(row):
+            if tile == "S":
+                src = (y * 3 + 1, x * 3 + 1)
+                tile = fallback
+            representation = representations[tile]
+            for i in range(3):
+                new_rows[i] += representation[i]
+        scaled_grid.extend(new_rows)
+    return scaled_grid, src
 
 
-score = 0 
-for y in range(len(inp)):
-    for x in range(len(inp[y])):
-        if inp[y][x] != '.':
-            continue
-        wn = 0
-        for cx in range(x):
-            pass
-        if wn % 2 == 1:
-            score += 1
+def bfs(grid, start):
+    def is_valid(x, y):
+        return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == "#"
 
-print(score)
+    queue, visited, max_n = [(start, 0)], set([start]), -1
+    while queue:
+        (y, x), n = queue.pop(0)
+        max_n = max(max_n, n)
+        for dx, dy in directions:
+            n_y, n_x = y + dy, x + dx
+            if not is_valid(n_y, n_x) or (n_y, n_x) in visited:
+                continue
+            queue.append(((n_y, n_x), n + 1))
+            visited.add((n_y, n_x))
+    return max_n
+
+s_grid, src = scale_up_grid(inp)
+#for line in s_grid:
+#    print(line)
+p1_score = bfs(s_grid, (src))//3
+print(p1_score)
