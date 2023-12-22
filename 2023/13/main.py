@@ -73,4 +73,6 @@ def p1(inp):
         score+=cur
     return score
 
+# 33520 34824
+
 print(p1(inp), p2(inp))
