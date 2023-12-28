@@ -32,10 +32,12 @@ def p2(seeds, maps):
         next_seeds = set()
         for seed in seeds:
             for dst, src, r in map:
-                splits = split(seed, (src, src+r))
+                splits = split(seed, (src, src + r))
                 if len(splits) == 3:
-                    seeds.extend([x for x  in [splits[0], splits[2]] if len(x)])
-                    next_seeds.add((splits[1][0]+(dst - src), splits[1][1]+(dst - src)))
+                    seeds.extend([x for x in [splits[0], splits[2]] if len(x)])
+                    next_seeds.add(
+                        (splits[1][0] + (dst - src), splits[1][1] + (dst - src))
+                    )
         seeds = list(next_seeds)
     return min(seeds)[0]
 
