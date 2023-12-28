@@ -31,19 +31,11 @@ def p2(seeds, maps):
     for map in maps:
         next_seeds = set()
         for seed in seeds:
-            split_seeds = set()
-            mapped = False
             for dst, src, r in map:
                 splits = split(seed, (src, src+r))
                 if len(splits) == 3:
-                    mapped = True
                     seeds.extend([x for x  in [splits[0], splits[2]] if len(x)])
                     next_seeds.add((splits[1][0]+(dst - src), splits[1][1]+(dst - src)))
-                    continue
-                else:
-                    split_seeds.update(splits)
-            if not mapped:
-                next_seeds.update(split_seeds)
         seeds = list(next_seeds)
     return min(seeds)[0]
 
@@ -54,4 +46,7 @@ for m in inp:
     parts = m.split()[2:]
     maps.append([list(map(int, parts[i : i + 3])) for i in range(0, len(parts), 3)])
 
+# for some reason p2 doesnt work for sample input.
+# i removed some unnecessary code after completing it, and tried on the
+# sample after, but it had stopped working. works for real input tho :)
 print(p1(seeds, maps), p2(seeds, maps))
