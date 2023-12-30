@@ -30,7 +30,7 @@ def solve(grid, min_steps, max_steps):
             
             nsteps = steps + 1 if i == dir_idx else 1
             ndist = heat + grid[ny][nx]
-            heappush(pq, (ndist, ny, nx, nsteps, i))
+            heappush(pq, (ndist, ny, nx, nsteps, i)) # type: ignore
     return -1
 
 inp = [list(map(int, x.strip())) for x in open("inp").readlines()]
